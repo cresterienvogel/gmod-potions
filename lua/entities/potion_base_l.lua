@@ -9,7 +9,7 @@ ENT.Spawnable = false
 if CLIENT then
 	function ENT:Initialize()
 		self.csModel = ClientsideModel(self.Model)
-		self.csModel:SetModelScale(self.Scale, 0)
+		self.csModel:SetModelScale(self.Scale)
 		self.csModel:SetColor(self.Color)
 	end
 
@@ -25,7 +25,8 @@ end
 
 if SERVER then
 	function ENT:Initialize()
-		self:SetModel("models/hunter/blocks/cube05x05x05.mdl")
+		self:SetModel(self.Model)
+		self:SetModelScale(self.Scale)
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetMoveType(MOVETYPE_NONE)
 		self:SetSolid(SOLID_VPHYSICS)
