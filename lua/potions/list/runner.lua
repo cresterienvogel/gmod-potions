@@ -11,16 +11,28 @@ end
 POTION.OnDrink = function(pl)
     if SERVER then
         pl:EmitSound("vo/npc/Barney/ba_yell.wav")
-        pl:SetRunSpeed(pl:GetRunSpeed() + 40)
+        pl:SetRunSpeed(pl:GetRunSpeed() + 100)
         pl:SetNWBool("Runner Potion", true)
 
-        timer.Simple(40, function()
-            if not IsValid(pl) then
+        timer.Create("Runner Potion #" .. pl:UniqueID(), 40, 1, function()
+            if not IsValid(pl) or not pl:GetNWBool("Runner Potion") then
                 return
             end
 
-            pl:SetRunSpeed(pl:GetRunSpeed() - 40)
+            pl:SetRunSpeed(pl:GetRunSpeed() - 100)
             pl:SetNWBool("Runner Potion", false)
         end)
     end
+end
+
+if SERVER then
+    hook.Add("PlayerDeath", "Runner Potion", function(pl)
+        if pl:GetNWBool("Runner Potion") then
+            pl:SetRunSpeed(pl:GetRunSpeed() - 100)
+            pl:SetNWBool("Runner Potion", false)
+            if timer.Exists("Runner Potion #" .. pl:UniqueID()) then
+                timer.Remove("Runner Potion #" .. pl:UniqueID())
+            end
+        end
+    end)
 end
