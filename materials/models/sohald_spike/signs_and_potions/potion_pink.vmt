@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/Sohald_Spike/Signs_and_Potions/Potion_Pink"
+	"$lightwarptexture" "models/Sohald_Spike/Signs_and_Potions/lightwarp3"
+	"$selfillum" "1"
+}
