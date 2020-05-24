@@ -13,8 +13,8 @@ POTION.OnDrink = function(pl)
         pl:SetJumpPower(pl:GetJumpPower() + 200)
         pl:SetNWBool("Jumper Potion", true)
 
-        timer.Simple(60, function()
-            if not IsValid(pl) then
+        timer.Create("Jumper Potion #" .. pl:UniqueID(), 60, 1, function()
+            if not IsValid(pl) or not pl:GetNWBool("Jumper Potion") then
                 return
             end
 
@@ -22,4 +22,16 @@ POTION.OnDrink = function(pl)
             pl:SetNWBool("Jumper Potion", false)
         end)
     end
+end
+
+if SERVER then
+    hook.Add("PlayerDeath", "Jumper Potion", function(pl)
+        if pl:GetNWBool("Jumper Potion") then
+            pl:SetJumpPower(pl:GetJumpPower() - 200)
+            pl:SetNWBool("Jumper Potion", false)
+            if timer.Exists("Jumper Potion #" .. pl:UniqueID()) then
+                timer.Remove("Jumper Potion #" .. pl:UniqueID())
+            end
+        end
+    end)
 end
