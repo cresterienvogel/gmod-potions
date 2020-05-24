@@ -13,8 +13,8 @@ POTION.OnDrink = function(pl)
         pl:SetModelScale(pl:GetModelScale() + 0.4)
         pl:SetNWBool("Gigant Potion", true)
 
-        timer.Simple(45, function()
-            if not IsValid(pl) then
+        timer.Create("Gigant Potion #" .. pl:UniqueID(), 45, 1, function()
+            if not IsValid(pl) or not pl:GetNWBool("Gigant Potion") then
                 return
             end
 
@@ -22,4 +22,16 @@ POTION.OnDrink = function(pl)
             pl:SetNWBool("Gigant Potion", false)
         end)
     end
+end
+
+if SERVER then
+    hook.Add("PlayerDeath", "Gigant Potion", function(pl)
+        if pl:GetNWBool("Gigant Potion") then
+            pl:SetModelScale(pl:GetModelScale() - 0.4)
+            pl:SetNWBool("Gigant Potion", false)
+            if timer.Exists("Gigant Potion #" .. pl:UniqueID()) then
+                timer.Remove("Gigant Potion #" .. pl:UniqueID())
+            end
+        end
+    end)
 end
