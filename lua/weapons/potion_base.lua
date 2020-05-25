@@ -14,7 +14,7 @@ SWEP.Instructions = ""
 
 SWEP.ViewModelFOV = 64
 SWEP.ViewModelFlip = false
-SWEP.ViewModel	= ""
+SWEP.ViewModel	= "models/weapons/c_crowbar.mdl"
 SWEP.WorldModel	= "models/hunter/blocks/cube025x025x025.mdl"
 
 SWEP.Spawnable	= false
@@ -35,7 +35,12 @@ SWEP.OffsetAng = Angle(0, 0, 0)
 
 SWEP.DeployTime = 1.75
 
+function SWEP:SetupDataTables()
+	self:NetworkVar("Bool", 0, "Using")
+end
+
 function SWEP:Initialize()
+	self:SetUsing(false)
 	self:SetHoldType("normal")
 end
 
@@ -50,10 +55,16 @@ end
 function SWEP:PrimaryAttack()
 	local Owner = self.Owner
 	if not self.CustomCheck(Owner) then
+		Owner:EmitSound("vo/npc/male01/stopitfm.wav", 75, 100, 0.5, CHAN_AUTO)
+		self:SetNextPrimaryFire(CurTime() + 3)
+		self:SetNextSecondaryFire(CurTime() + 3)
 		return
 	end
 
 	self:SetNextPrimaryFire(CurTime() + self.DeployTime + 0.5)
+	self:SetNextSecondaryFire(CurTime() + self.DeployTime + 0.5)
+	self:SetUsing(true)
+
 	Owner:DoAnimationEvent(ACT_GMOD_TAUNT_SALUTE)
 
 	timer.Simple(self.DeployTime, function()
@@ -68,6 +79,7 @@ function SWEP:PrimaryAttack()
 
 		self.OnDrink(Owner)
 
+		self:SetUsing(false)
 		if SERVER then
 			self:Remove()
 			Owner:SwitchToDefaultWeapon()
@@ -88,16 +100,8 @@ function SWEP:Reload()
 end
 
 function SWEP:Deploy()
-	local Owner = self.Owner
-	if not IsValid(Owner) then
-		return
-	end
-
-	if SERVER then
-		Owner:DrawViewModel(false)
-	end
-
-	return true
+	self:SetUsing(false)
+	self.Owner:DrawViewModel(false)
 end
 
 function SWEP:Holster()
