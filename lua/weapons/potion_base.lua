@@ -57,7 +57,7 @@ function SWEP:PrimaryAttack()
 	Owner:DoAnimationEvent(ACT_GMOD_TAUNT_SALUTE)
 
 	timer.Simple(self.DeployTime, function()
-		if not IsValid(Owner) then
+		if not IsValid(Owner) or not Owner:Alive() then
 			return
 		end
 
